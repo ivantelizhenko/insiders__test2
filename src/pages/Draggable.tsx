@@ -2,6 +2,7 @@ import { UniqueIdentifier } from '@dnd-kit/core';
 import { useSortable } from '@dnd-kit/sortable';
 import { ReactNode } from 'react';
 import styled from 'styled-components';
+import { useTabs } from '../store/TabsContext';
 
 const Wrapper = styled.div`
   padding: 16px 20px 16px 46px;
@@ -45,9 +46,13 @@ const ButtonClose = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 2px;
+  color: transparent;
+  z-index: 100;
 
   &:hover {
     background-color: hsla(0, 84%, 59%, 1);
+    color: inherit;
   }
 `;
 
@@ -58,8 +63,12 @@ function Draggable({
   children: ReactNode;
   id: UniqueIdentifier;
 }) {
+  const { removeTab } = useTabs();
   const { transform, setNodeRef, listeners, attributes } = useSortable({
     id: id,
+    data: {
+      dragIgnoreAttribute: 'data-drag-ignore',
+    },
   });
 
   const style = transform
@@ -68,10 +77,17 @@ function Draggable({
       }
     : undefined;
 
+  function handleDeleteTab() {
+    console.log('click');
+    removeTab(id);
+  }
+
   return (
     <Wrapper ref={setNodeRef} style={style} {...listeners} {...attributes}>
       <p>{children}</p>
-      <ButtonClose>×</ButtonClose>
+      <ButtonClose data-drag-ignore onClick={handleDeleteTab}>
+        ×
+      </ButtonClose>
     </Wrapper>
   );
 }

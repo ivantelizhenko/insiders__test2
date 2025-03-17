@@ -3,7 +3,9 @@ import {
   DragEndEvent,
   DragOverlay,
   DragStartEvent,
-  UniqueIdentifier,
+  PointerSensor,
+  useSensor,
+  useSensors,
 } from '@dnd-kit/core';
 import { restrictToHorizontalAxis } from '@dnd-kit/modifiers';
 import {
@@ -11,22 +13,28 @@ import {
   rectSwappingStrategy,
   SortableContext,
 } from '@dnd-kit/sortable';
-import { useState } from 'react';
+
 import styled from 'styled-components';
 import Droppable from './Droppable';
 import Draggable from './Draggable';
+import { useTabs } from '../store/TabsContext';
 
 const StyledPage = styled.div`
   padding: 6.4rem;
   background: pink;
   height: 100%;
+  max-width: 100%;
 `;
 
 function Page() {
-  const [items, setItems] = useState<UniqueIdentifier[]>([
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 0,
-  ]);
-  const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
+  const { tabs, activeId, setActiveId, removeActiveId, setTabs } = useTabs();
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 10,
+      },
+    })
+  );
 
   function handleDragStart(event: DragStartEvent) {
     setActiveId(event.active.id);
@@ -34,15 +42,14 @@ function Page() {
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
-    setActiveId(null);
+    removeActiveId();
 
     if (over && active.id !== over.id) {
-      setItems(items => {
-        const oldIndex = items.indexOf(active.id);
-        const newIndex = items.indexOf(over.id);
-
-        return arrayMove(items, oldIndex, newIndex);
-      });
+      const activeTab = tabs.find(tab => tab.id === active.id);
+      const overTab = tabs.find(tab => tab.id === over.id);
+      const oldIndex = tabs.indexOf(activeTab!);
+      const newIndex = tabs.indexOf(overTab!);
+      setTabs(arrayMove(tabs, oldIndex, newIndex));
     }
   }
 
@@ -52,12 +59,13 @@ function Page() {
         onDragEnd={handleDragEnd}
         onDragStart={handleDragStart}
         modifiers={[restrictToHorizontalAxis]}
+        sensors={sensors}
       >
-        <SortableContext items={items} strategy={rectSwappingStrategy}>
+        <SortableContext items={tabs} strategy={rectSwappingStrategy}>
           <Droppable>
-            {items.map(item => (
-              <Draggable id={item} key={item}>
-                Drag me {item}
+            {tabs.map(tab => (
+              <Draggable id={tab.id} key={tab.id}>
+                {tab.title}
               </Draggable>
             ))}
           </Droppable>
@@ -66,7 +74,7 @@ function Page() {
         <DragOverlay>
           {activeId ? (
             <Draggable id={activeId} key={activeId}>
-              Drag me {activeId}
+              {tabs.find(tab => tab.id === activeId)?.title}
             </Draggable>
           ) : null}
         </DragOverlay>
