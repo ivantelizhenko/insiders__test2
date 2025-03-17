@@ -27,8 +27,15 @@ const StyledNavigation = styled.div`
   max-width: 100%;
 `;
 
+const Wrapper = styled.div`
+  display: flex;
+`;
+
+const AddButton = styled.button``;
+
 function Navigation() {
-  const { tabs, activeId, setActiveId, removeActiveId, moveTabs } = useTabs();
+  const { tabs, activeId, setActiveId, removeActiveId, moveTabs, addTab } =
+    useTabs();
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -54,6 +61,16 @@ function Navigation() {
     }
   }
 
+  function handleAddTab() {
+    const randomNumber = Math.round(Math.random() * 100);
+    const newTab = {
+      title: `new title ${randomNumber}`,
+      id: Math.random() + '',
+    };
+
+    addTab(newTab);
+  }
+
   return (
     <>
       <StyledNavigation>
@@ -63,15 +80,18 @@ function Navigation() {
           modifiers={[restrictToHorizontalAxis]}
           sensors={sensors}
         >
-          <SortableContext items={tabs} strategy={rectSwappingStrategy}>
-            <Droppable>
-              {tabs.map(tab => (
-                <Draggable id={tab.id} key={tab.id}>
-                  {tab.title}
-                </Draggable>
-              ))}
-            </Droppable>
-          </SortableContext>
+          <Wrapper>
+            <AddButton onClick={handleAddTab}>Add</AddButton>
+            <SortableContext items={tabs} strategy={rectSwappingStrategy}>
+              <Droppable>
+                {tabs.map(tab => (
+                  <Draggable id={tab.id} key={tab.id}>
+                    {tab.title}
+                  </Draggable>
+                ))}
+              </Droppable>
+            </SortableContext>
+          </Wrapper>
 
           <DragOverlay>
             {activeId ? (

@@ -1,10 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useReducer,
-  useRef,
-} from 'react';
+import { createContext, useContext, useEffect, useReducer } from 'react';
 import {
   Action,
   Tab,
@@ -12,10 +6,7 @@ import {
   TabsContextValue,
   TabsState,
 } from './TabsContextType';
-import {
-  getLocalStorage,
-  saveToLocalStage,
-} from '../services/manageLocaleStorage';
+import { getLocalStorage } from '../services/manageLocaleStorage';
 import { TAB_LOCAL_STORAGE_KEY } from '../utils/constants';
 
 const TabsContext = createContext<TabsContextValue | null>(null);
@@ -43,7 +34,6 @@ function tabsReducer(state: TabsState, action: Action): TabsState {
       return {
         ...state,
         tabs: state.tabs.filter((tab: Tab) => {
-          console.log(tab.id !== action.payload);
           return tab.id !== action.payload;
         }),
       };
@@ -67,19 +57,11 @@ function tabsReducer(state: TabsState, action: Action): TabsState {
 
 function TabsProvider({ children }: TabsContextProviderProps) {
   const [tabsState, dispatch] = useReducer(tabsReducer, initialState);
-  const isFirstRender = useRef(true);
 
   useEffect(() => {
     const tabs = getLocalStorage(TAB_LOCAL_STORAGE_KEY);
     dispatch({ type: 'tabs/loaded', payload: tabs || [] });
   }, []);
-
-  useEffect(() => {
-    if (!isFirstRender) {
-      saveToLocalStage(TAB_LOCAL_STORAGE_KEY, tabsState.tabs);
-    }
-    isFirstRender.current = false;
-  }, [tabsState.tabs]);
 
   const ctx: TabsContextValue = {
     ...tabsState,

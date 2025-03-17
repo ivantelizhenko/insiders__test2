@@ -1,5 +1,9 @@
+import { useParams } from 'react-router';
+
 function Page() {
-  return <div>Page</div>;
+  const { userId } = useParams();
+
+  return <div>{userId}</div>;
 }
 
 export default Page;

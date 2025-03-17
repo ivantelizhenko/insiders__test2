@@ -82,17 +82,12 @@ function Draggable({
     removeTab(id);
   }
 
-  function handleOpenPage() {
-    console.log('open');
-  }
-
   return (
     <Wrapper
       ref={setNodeRef}
       style={style}
       {...listeners}
       {...attributes}
-      onClick={handleOpenPage}
       to={`${id}`}
     >
       <p>{children}</p>
