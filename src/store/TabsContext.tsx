@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer } from 'react';
+import { createContext, useContext, useEffect, useReducer } from 'react';
 import {
   Action,
   Tab,
@@ -6,37 +6,24 @@ import {
   TabsContextValue,
   TabsState,
 } from './TabsContextType';
+import { getLocalStorage } from '../services/manageLocaleStorage';
+import { TAB_LOCAL_STORAGE_KEY } from '../utils/constants';
 
 const TabsContext = createContext<TabsContextValue | null>(null);
 
 const initialState: TabsState = {
-  tabs: [
-    { title: 'title 1', id: Math.random() + '' },
-    { title: 'title 2', id: Math.random() + '' },
-    { title: 'title 3', id: Math.random() + '' },
-    { title: 'title 4', id: Math.random() + '' },
-    { title: 'title 5', id: Math.random() + '' },
-    { title: 'title 6', id: Math.random() + '' },
-    { title: 'title 7', id: Math.random() + '' },
-    { title: 'title 8', id: Math.random() + '' },
-    { title: 'title 9', id: Math.random() + '' },
-    { title: 'title 10', id: Math.random() + '' },
-    { title: 'title 11', id: Math.random() + '' },
-    { title: 'title 12', id: Math.random() + '' },
-    { title: 'title 13', id: Math.random() + '' },
-    { title: 'title 14', id: Math.random() + '' },
-    { title: 'title 15', id: Math.random() + '' },
-    { title: 'title 16', id: Math.random() + '' },
-    { title: 'title 17', id: Math.random() + '' },
-    { title: 'title 18', id: Math.random() + '' },
-    { title: 'title 19', id: Math.random() + '' },
-    { title: 'title 20', id: Math.random() + '' },
-  ],
+  tabs: [],
   activeId: null,
 };
 
 function tabsReducer(state: TabsState, action: Action): TabsState {
   switch (action.type) {
+    case 'tabs/loaded': {
+      return {
+        ...state,
+        tabs: action.payload,
+      };
+    }
     case 'tab/add': {
       return {
         ...state,
@@ -69,8 +56,26 @@ function tabsReducer(state: TabsState, action: Action): TabsState {
   }
 }
 
+// [
+//   { title: 'title 1', id: 'XA86yi55Vi' },
+//   { title: 'title 2', id: '3hGd9ZC8z6' },
+//   { title: 'title 3', id: 'Vv9c8Be2Z8' },
+//   { title: 'title 4', id: '8742mNdbDS' },
+//   { title: 'title 5', id: 'Mv2558DgtU' },
+//   { title: 'title 6', id: 'sA3VAak294' },
+//   { title: 'title 7', id: 'f3V78R8Fed' },
+//   { title: 'title 8', id: 'v54SH6Dyk3' },
+//   { title: 'title 9', id: '867CGsJie3' },
+//   { title: 'title 10', id: '867CGsJie3' },
+// ]
+
 function TabsProvider({ children }: TabsContextProviderProps) {
   const [tabsState, dispatch] = useReducer(tabsReducer, initialState);
+
+  useEffect(() => {
+    const tabs = getLocalStorage(TAB_LOCAL_STORAGE_KEY);
+    dispatch({ type: 'tabs/loaded', payload: tabs || [] });
+  }, []);
 
   const ctx: TabsContextValue = {
     ...tabsState,
@@ -86,8 +91,8 @@ function TabsProvider({ children }: TabsContextProviderProps) {
     removeActiveId() {
       dispatch({ type: 'activeId/remove' });
     },
-    setTabs(newTabs) {
-      dispatch({ type: 'tab/move', payload: newTabs });
+    moveTabs(movedTabs) {
+      dispatch({ type: 'tab/move', payload: movedTabs });
     },
   };
 

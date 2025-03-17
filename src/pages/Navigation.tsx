@@ -19,6 +19,8 @@ import Droppable from './Droppable';
 import Draggable from './Draggable';
 import { useTabs } from '../store/TabsContext';
 import Page from './Page';
+import { saveToLocalStage } from '../services/manageLocaleStorage';
+import { TAB_LOCAL_STORAGE_KEY } from '../utils/constants';
 
 const StyledNavigation = styled.div`
   padding: 6.4rem;
@@ -28,7 +30,7 @@ const StyledNavigation = styled.div`
 `;
 
 function Navigation() {
-  const { tabs, activeId, setActiveId, removeActiveId, setTabs } = useTabs();
+  const { tabs, activeId, setActiveId, removeActiveId, moveTabs } = useTabs();
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -50,7 +52,9 @@ function Navigation() {
       const overTab = tabs.find(tab => tab.id === over.id);
       const oldIndex = tabs.indexOf(activeTab!);
       const newIndex = tabs.indexOf(overTab!);
-      setTabs(arrayMove(tabs, oldIndex, newIndex));
+      const movedTabs = arrayMove(tabs, oldIndex, newIndex);
+      moveTabs(movedTabs);
+      saveToLocalStage(TAB_LOCAL_STORAGE_KEY, movedTabs);
     }
   }
 
@@ -81,8 +85,8 @@ function Navigation() {
             ) : null}
           </DragOverlay>
         </DndContext>
+        <Page />
       </StyledNavigation>
-      <Page />
     </>
   );
 }

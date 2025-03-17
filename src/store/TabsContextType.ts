@@ -14,13 +14,18 @@ export type TabsState = {
 export type TabsContextValue = TabsState & {
   addTab: (newTab: Tab) => void;
   removeTab: (id: UniqueIdentifier) => void;
-  setTabs: (newTabs: Tab[]) => void;
+  moveTabs: (newTabs: Tab[]) => void;
   setActiveId: (id: UniqueIdentifier) => void;
   removeActiveId: () => void;
 };
 
 export type TabsContextProviderProps = {
   children: ReactNode;
+};
+
+type LoadedTabsAction = {
+  type: 'tabs/loaded';
+  payload: Tab[];
 };
 
 type AddTabAction = {
@@ -44,6 +49,7 @@ type RemoveActiveIdAction = {
 };
 
 export type Action =
+  | LoadedTabsAction
   | AddTabAction
   | RemoveTabAction
   | MoveTabAction
