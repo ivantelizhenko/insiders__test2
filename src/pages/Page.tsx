@@ -1,81 +1,76 @@
-import { DndContext, useDraggable, useDroppable } from '@dnd-kit/core';
-import { ReactNode, useState } from 'react';
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
+  UniqueIdentifier,
+} from '@dnd-kit/core';
+import { restrictToHorizontalAxis } from '@dnd-kit/modifiers';
+import {
+  arrayMove,
+  rectSwappingStrategy,
+  SortableContext,
+} from '@dnd-kit/sortable';
+import { useState } from 'react';
 import styled from 'styled-components';
-
-const Wrapper = styled.div`
-  padding: 64px;
-  height: 100%;
-`;
+import Droppable from './Droppable';
+import Draggable from './Draggable';
 
 const StyledPage = styled.div`
+  padding: 6.4rem;
   background: pink;
   height: 100%;
 `;
 
-const Drop = styled.div`
-  width: 100%;
-  height: 20rem;
-  /* background-color: pink; */
-`;
-
-const Drag = styled.button`
-  width: 10rem;
-  height: 10rem;
-  /* background-color: lightgreen; */
-`;
-
 function Page() {
-  const [isDropped, setIsDropped] = useState(false);
-  const draggableMarkup = <Draggable>Drag me</Draggable>;
+  const [items, setItems] = useState<UniqueIdentifier[]>([1, 2, 3, 4]);
+  const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 
-  function handleDragEnd(event) {
-    if (event.over && event.over.id === 'droppable') {
-      setIsDropped(true);
+  function handleDragStart(event: DragStartEvent) {
+    setActiveId(event.active.id);
+  }
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    setActiveId(null);
+
+    if (over && active.id !== over.id) {
+      setItems(items => {
+        const oldIndex = items.indexOf(active.id);
+        const newIndex = items.indexOf(over.id);
+
+        return arrayMove(items, oldIndex, newIndex);
+      });
     }
   }
 
   return (
-    <Wrapper>
-      <StyledPage>
-        <DndContext onDragEnd={handleDragEnd}>
-          <Droppable>{isDropped ? draggableMarkup : 'Drop here'}</Droppable>
-          {!isDropped ? draggableMarkup : null}
-        </DndContext>
-      </StyledPage>
-    </Wrapper>
+    <StyledPage>
+      <DndContext
+        onDragEnd={handleDragEnd}
+        onDragStart={handleDragStart}
+        modifiers={[restrictToHorizontalAxis]}
+      >
+        <SortableContext items={items} strategy={rectSwappingStrategy}>
+          <Droppable>
+            {items.map(item => (
+              <Draggable id={item} key={item}>
+                Drag me {item}
+              </Draggable>
+            ))}
+          </Droppable>
+        </SortableContext>
+
+        <DragOverlay>
+          {activeId ? (
+            <Draggable id={activeId} key={activeId}>
+              Drag me {activeId}
+            </Draggable>
+          ) : null}
+        </DragOverlay>
+      </DndContext>
+    </StyledPage>
   );
 }
 
 export default Page;
-
-function Draggable({ children }: { children: ReactNode }) {
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: 'draggable',
-  });
-  const style = transform
-    ? {
-        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-      }
-    : undefined;
-
-  return (
-    <Drag ref={setNodeRef} style={style} {...listeners} {...attributes}>
-      {children}
-    </Drag>
-  );
-}
-
-function Droppable({ children }: { children: ReactNode }) {
-  const { isOver, setNodeRef } = useDroppable({
-    id: 'droppable',
-  });
-  const style = {
-    backgroundColor: isOver ? 'green' : 'lightblue',
-  };
-
-  return (
-    <Drop ref={setNodeRef} style={style}>
-      {children}
-    </Drop>
-  );
-}
