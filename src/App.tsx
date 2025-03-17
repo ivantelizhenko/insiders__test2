@@ -6,8 +6,8 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route index element={<Navigate replace to="/" />} />
-        <Route path="/" element={<Page />} />
+        <Route index element={<Navigate replace to="/app" />} />
+        <Route path="/app" element={<Page />} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </BrowserRouter>

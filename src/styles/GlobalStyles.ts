@@ -11,11 +11,12 @@ const GlobalStyles = createGlobalStyle`
 
 html {
   font-size: 62.5%;
+  height: 100%;
 }
 
 body {
   line-height: 1.5;
-
+  height: 100%;
   -webkit-font-smoothing: antialiased;
   font-size: 1.6rem;
 }
@@ -78,6 +79,7 @@ ul {
 
 #root,
 #__next {
+  height: 100%;
   isolation: isolate;
 }`;
 
