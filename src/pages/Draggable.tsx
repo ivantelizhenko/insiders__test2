@@ -3,8 +3,9 @@ import { useSortable } from '@dnd-kit/sortable';
 import { ReactNode } from 'react';
 import styled from 'styled-components';
 import { useTabs } from '../store/TabsContext';
+import { Link } from 'react-router';
 
-const Wrapper = styled.div`
+const Wrapper = styled(Link)`
   padding: 16px 20px 16px 46px;
   border-radius: 4px;
   height: 48px;
@@ -78,12 +79,22 @@ function Draggable({
     : undefined;
 
   function handleDeleteTab() {
-    console.log('click');
     removeTab(id);
   }
 
+  function handleOpenPage() {
+    console.log('open');
+  }
+
   return (
-    <Wrapper ref={setNodeRef} style={style} {...listeners} {...attributes}>
+    <Wrapper
+      ref={setNodeRef}
+      style={style}
+      {...listeners}
+      {...attributes}
+      onClick={handleOpenPage}
+      to={`${id}`}
+    >
       <p>{children}</p>
       <ButtonClose data-drag-ignore onClick={handleDeleteTab}>
         ×
