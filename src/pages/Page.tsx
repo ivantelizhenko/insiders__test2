@@ -23,7 +23,9 @@ const StyledPage = styled.div`
 `;
 
 function Page() {
-  const [items, setItems] = useState<UniqueIdentifier[]>([1, 2, 3, 4]);
+  const [items, setItems] = useState<UniqueIdentifier[]>([
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 0,
+  ]);
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 
   function handleDragStart(event: DragStartEvent) {

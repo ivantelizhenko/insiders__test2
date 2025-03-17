@@ -19,6 +19,7 @@ body {
   height: 100%;
   -webkit-font-smoothing: antialiased;
   font-size: 1.6rem;
+  font-family: 'Poppins', sans-serif
 }
 
 img,
