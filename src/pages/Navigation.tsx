@@ -19,8 +19,6 @@ import Droppable from './Droppable';
 import Draggable from './Draggable';
 import { useTabs } from '../store/TabsContext';
 import Page from './Page';
-import { saveToLocalStage } from '../services/manageLocaleStorage';
-import { TAB_LOCAL_STORAGE_KEY } from '../utils/constants';
 
 const StyledNavigation = styled.div`
   padding: 6.4rem;
@@ -52,9 +50,7 @@ function Navigation() {
       const overTab = tabs.find(tab => tab.id === over.id);
       const oldIndex = tabs.indexOf(activeTab!);
       const newIndex = tabs.indexOf(overTab!);
-      const movedTabs = arrayMove(tabs, oldIndex, newIndex);
-      moveTabs(movedTabs);
-      saveToLocalStage(TAB_LOCAL_STORAGE_KEY, movedTabs);
+      moveTabs(arrayMove(tabs, oldIndex, newIndex));
     }
   }
 
