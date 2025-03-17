@@ -21,10 +21,10 @@ import { useTabs } from '../store/TabsContext';
 import Page from './Page';
 
 const StyledNavigation = styled.div`
-  padding: 6.4rem;
-  background: pink;
+  background: hsla(206, 33%, 96%, 1);
   height: 100%;
   max-width: 100%;
+  overflow: clip;
 `;
 
 const Wrapper = styled.div`

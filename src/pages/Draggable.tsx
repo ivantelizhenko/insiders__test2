@@ -7,11 +7,12 @@ import { Link } from 'react-router';
 
 const Wrapper = styled(Link)`
   padding: 16px 20px 16px 46px;
-  border-radius: 4px;
   height: 48px;
   width: fit-content;
 
-  background-color: #e5e5e5;
+  cursor: pointer;
+  color: hsla(214, 6%, 53%, 1);
+  background-color: #fff;
   display: flex;
   gap: 2.4rem;
   align-items: center;
@@ -22,7 +23,8 @@ const Wrapper = styled(Link)`
   font-weight: 500;
 
   &:hover {
-    background-color: hsla(204, 29%, 97%, 1);
+    background-color: hsla(206, 33%, 96%, 1);
+    color: #000;
     cursor: pointer;
   }
 
